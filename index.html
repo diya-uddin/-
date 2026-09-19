@@ -5,20 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Basketball Matchmaking</title>
     <link rel="stylesheet" href="style.css">
-    <!-- เตรียมรองรับ PWA ในอนาคต -->
     <link rel="manifest" href="manifest.json">
+    <!-- เตรียมเชื่อมต่อ OneSignal สำหรับระบบ Push Notification -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 </head>
 <body>
-    <!-- พื้นหลังแสงเคลื่อนไหว -->
+    <!-- พื้นหลังแสงเคลื่อนไหว Glassmorphism -->
     <div class="bg-animation">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
     </div>
 
-    <!-- คอนเทนเนอร์หลักแบบ Glassmorphism -->
+    <!-- คอนเทนเนอร์หลักของแอป -->
     <div class="glass-container" id="app-container">
         
-        <!-- 1. หน้า Login -->
+        <!-- 1. หน้า Loading (ซ่อนไว้เสมอ จะโชว์ตอนดึงข้อมูล) -->
+        <div id="loading-section" class="glass-panel" style="display: none; text-align: center;">
+            <div class="spinner"></div>
+            <p id="loading-text">กำลังประมวลผล...</p>
+        </div>
+
+        <!-- 2. หน้า Login -->
         <div id="login-section" class="glass-panel">
             <h2>เข้าสู่ระบบ 🏀</h2>
             <input type="text" id="login-name" placeholder="ชื่อผู้ใช้งาน" class="glass-input">
@@ -27,7 +34,7 @@
             <p class="switch-text">ยังไม่มีบัญชี? <span onclick="toggleSection('register-section')">สมัครสมาชิก</span></p>
         </div>
 
-        <!-- 2. หน้า Register -->
+        <!-- 3. หน้า Register -->
         <div id="register-section" class="glass-panel" style="display: none;">
             <h2>สมัครสมาชิก 📝</h2>
             <input type="text" id="reg-name" placeholder="ชื่อผู้ใช้งาน" class="glass-input">
@@ -42,37 +49,93 @@
                 <option value="C">Center (C)</option>
             </select>
             <input type="text" id="reg-pic" placeholder="ลิงก์รูปโปรไฟล์ (ถ้ามี)" class="glass-input">
-            
             <button onclick="register()" class="glass-btn primary-btn">สมัครสมาชิก</button>
             <p class="switch-text">มีบัญชีแล้ว? <span onclick="toggleSection('login-section')">เข้าสู่ระบบ</span></p>
-        </div> <!-- ✅ เพิ่มแท็กปิดของหน้านี้กลับมาแล้ว -->
+        </div>
 
-        <!-- 3. หน้า Profile (Dashboard) -->
+        <!-- 4. หน้า Profile (Dashboard หลัก) -->
         <div id="profile-section" class="glass-panel" style="display: none;">
             <div class="profile-header">
-                <img id="user-avatar" src="https://via.placeholder.com/100" alt="Profile" class="avatar">
+                <img id="user-avatar" src="" alt="Profile" class="avatar">
                 <h2 id="user-name">ชื่อผู้เล่น</h2>
                 <p id="user-details">ตำแหน่ง | เบอร์เสื้อ</p>
                 <span id="user-role-badge" class="role-badge">Player</span>
             </div>
-            
             <div class="menu-grid">
-                <button onclick="toggleSection('match-section')" class="glass-btn action-btn">🏀 จับคู่</button>
-                <button onclick="toggleSection('leaderboard-section')" class="glass-btn action-btn">🏆 ลำดับ</button>
-                <button onclick="toggleSection('stats-section')" class="glass-btn action-btn">📊 สถิติ</button>
+                <button onclick="toggleSection('match-setup-section')" class="glass-btn action-btn">🏀 หาคู่แข่ง</button>
+                <button onclick="loadLeaderboard()" class="glass-btn action-btn">🏆 ลำดับผู้เล่น</button>
+                <button onclick="loadPersonalStats()" class="glass-btn action-btn">📊 สถิติ & AI Coach</button>
             </div>
-
             <button onclick="logout()" class="glass-btn logout-btn">ออกจากระบบ</button>
         </div>
 
-        <!-- 4. หน้า Loading (ซ่อนไว้) -->
-        <div id="loading-section" class="glass-panel" style="display: none; text-align: center;">
-            <div class="spinner"></div>
-            <p>กำลังประมวลผล...</p>
+        <!-- 5. หน้า สร้างห้องจับคู่ (Match Setup) -->
+        <div id="match-setup-section" class="glass-panel" style="display: none;">
+            <h2>สร้างห้องแข่ง ⚔️</h2>
+            <div class="menu-grid">
+                <button onclick="createMatch('1v1')" class="glass-btn action-btn">แข่ง 1v1</button>
+                <button onclick="createMatch('2v2')" class="glass-btn action-btn">แข่ง 2v2</button>
+                <button onclick="createMatch('3v3')" class="glass-btn action-btn">แข่ง 3v3</button>
+                <button onclick="createMatch('5v5')" class="glass-btn action-btn">แข่ง 5v5</button>
+                <button onclick="loadActiveMatches()" class="glass-btn action-btn" style="background: rgba(234, 179, 8, 0.2); border-color: #eab308; color: #eab308;">เข้าร่วมห้องที่มีอยู่</button>
+            </div>
+            <button onclick="toggleSection('profile-section')" class="glass-btn logout-btn">กลับหน้าหลัก</button>
+        </div>
+
+        <!-- 6. หน้า หน้ารอแข่ง (Lobby) -->
+        <div id="lobby-section" class="glass-panel" style="display: none;">
+            <h2 id="lobby-title">หน้ารอแข่ง</h2>
+            <p id="lobby-status" style="text-align: center; color: #f97316; margin-bottom: 10px;">รอผู้เล่น...</p>
+            <div id="lobby-players" class="scroll-box">
+                <!-- รายชื่อผู้เล่นจะถูกแทรกที่นี่ผ่าน JS -->
+            </div>
+            <button onclick="joinAsReferee()" class="glass-btn action-btn" style="background: rgba(234, 179, 8, 0.2); color: #eab308; margin-top: 10px;">✋ ขอเป็นกรรมการแมตช์นี้</button>
+            <button onclick="toggleSection('profile-section')" class="glass-btn logout-btn">ย่อหน้าต่าง (รอแจ้งเตือน)</button>
+        </div>
+
+        <!-- 7. หน้า กรรมการ (Referee UI - One Tap) -->
+        <div id="referee-section" class="glass-panel" style="display: none;">
+            <h2>บันทึกสถิติ ⏱️</h2>
+            <select id="ref-player-select" class="glass-input" style="margin-bottom: 15px;">
+                <option value="">เลือกผู้เล่นเพื่อบันทึก...</option>
+                <!-- รายชื่อผู้เล่นจะถูกเพิ่มเข้ามาที่นี่ -->
+            </select>
+            <div class="ref-grid">
+                <button onclick="addStat('2P')" class="glass-btn action-btn">+2 แต้ม</button>
+                <button onclick="addStat('3P')" class="glass-btn action-btn">+3 แต้ม</button>
+                <button onclick="addStat('REB')" class="glass-btn action-btn">REB (รีบาวด์)</button>
+                <button onclick="addStat('AST')" class="glass-btn action-btn">AST (ส่ง)</button>
+                <button onclick="addStat('BLK')" class="glass-btn action-btn">BLK (บล็อก)</button>
+                <button onclick="addStat('STL')" class="glass-btn action-btn">STL (แย่งบอล)</button>
+            </div>
+            <button onclick="finishMatch()" class="glass-btn primary-btn" style="margin-top: 20px;">จบการแข่งขัน & บันทึกสถิติ</button>
+        </div>
+
+        <!-- 8. หน้า ลำดับ (Leaderboard) -->
+        <div id="leaderboard-section" class="glass-panel" style="display: none;">
+            <h2>🏆 จัดอันดับผู้เล่น</h2>
+            <div id="leaderboard-content" class="scroll-box">
+                <!-- ข้อมูลจัดอันดับจะมาแทรกที่นี่ -->
+            </div>
+            <button onclick="toggleSection('profile-section')" class="glass-btn logout-btn">กลับหน้าหลัก</button>
+        </div>
+
+        <!-- 9. หน้า สถิติส่วนตัว & AI Coach -->
+        <div id="stats-section" class="glass-panel" style="display: none;">
+            <h2>📊 สถิติของคุณ</h2>
+            <div id="personal-stats-content" class="stats-box">
+                <!-- ข้อมูลสถิติส่วนตัวจะมาแทรกที่นี่ -->
+            </div>
+            <button onclick="callAICoach()" class="glass-btn primary-btn" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); margin-top: 15px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+                🤖 ให้ AI Coach วิเคราะห์ฟอร์ม
+            </button>
+            <div id="ai-coach-response" class="glass-input" style="display: none; margin-top: 15px; min-height: 100px; background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.5);">
+                <!-- คำแนะนำจาก Gemini AI จะแสดงที่นี่ -->
+            </div>
+            <button onclick="toggleSection('profile-section')" class="glass-btn logout-btn">กลับหน้าหลัก</button>
         </div>
 
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
