@@ -3,19 +3,25 @@ const API_URL = "https://script.google.com/macros/s/AKfycbw6DZi149qDMApfkg0bB46w
 
 // ฟังก์ชันสลับหน้าต่าง UI
 function toggleSection(sectionId) {
+    // ซ่อนทุกหน้าก่อน
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('register-section').style.display = 'none';
+    if (document.getElementById('profile-section')) {
+        document.getElementById('profile-section').style.display = 'none';
+    }
     
-    if(sectionId !== 'loading-section') {
+    // ซ่อนหน้า Loading เสมอ ยกเว้นโดนสั่งให้เปิด
+    if (sectionId !== 'loading-section') {
         document.getElementById('loading-section').style.display = 'none';
     }
     
+    // เปิดเฉพาะหน้าที่ต้องการ
     document.getElementById(sectionId).style.display = 'flex';
 }
 
-// ฟังก์ชันสำหรับเรียก API
+
 async function callAPI(action, payload) {
-    toggleSection('loading-section'); // เปิดหน้าต่างโหลด
+    toggleSection('loading-section'); 
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -24,10 +30,12 @@ async function callAPI(action, payload) {
         const result = await response.json();
         return result;
     } catch (error) {
+        document.getElementById('loading-section').style.display = 'none'; // เพิ่มบรรทัดนี้!
         alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
         console.error(error);
     }
 }
+
 
 // --- แก้ไขฟังก์ชัน login() เดิม ให้พาไปหน้า Profile เมื่อสำเร็จ ---
 async function login() {
