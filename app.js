@@ -29,7 +29,7 @@ async function callAPI(action, payload) {
     }
 }
 
-// ระบบเข้าสู่ระบบ
+// --- แก้ไขฟังก์ชัน login() เดิม ให้พาไปหน้า Profile เมื่อสำเร็จ ---
 async function login() {
     const name = document.getElementById('login-name').value;
     const pass = document.getElementById('login-pass').value;
@@ -39,19 +39,51 @@ async function login() {
     const result = await callAPI("login", { name: name, password: pass });
 
     if (result.status === "success") {
-        alert("เข้าสู่ระบบสำเร็จ! ยินดีต้อนรับ " + result.user.name);
-        // บันทึกข้อมูลผู้ใช้ลงในเครื่อง (Local Storage)
+        // บันทึกข้อมูลลงเครื่อง
         localStorage.setItem("user", JSON.stringify(result.user));
-        // สเต็ปต่อไป: โอนไปยังหน้า Profile 
-        // window.location.href = "profile.html"; 
-    } else if (result.status === "pending") {
-        alert(result.message); // รอหัวหน้าทีมยืนยัน
-        toggleSection('login-section');
+        // แสดงหน้า Profile
+        renderProfile(result.user);
     } else {
-        alert(result.message); // รหัสผิด
+        alert(result.message); 
         toggleSection('login-section');
     }
 }
+
+// --- โค้ดที่ต้องเพิ่มใหม่ด้านล่างนี้ ---
+
+// ฟังก์ชันจัดเตรียมข้อมูลแสดงในหน้า Profile
+function renderProfile(user) {
+    document.getElementById('user-name').innerText = user.name;
+    document.getElementById('user-details').innerText = `${user.position} | เบอร์ ${user.jerseyNo}`;
+    document.getElementById('user-role-badge').innerText = user.role;
+    
+    if(user.profilePic) {
+        document.getElementById('user-avatar').src = user.profilePic;
+    } else {
+        document.getElementById('user-avatar').src = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // รูปพื้นฐาน
+    }
+    
+    toggleSection('profile-section');
+}
+
+// ฟังก์ชันออกจากระบบ
+function logout() {
+    localStorage.removeItem("user");
+    document.getElementById('login-name').value = "";
+    document.getElementById('login-pass').value = "";
+    toggleSection('login-section');
+}
+
+// ตรวจสอบสถานะตอนเปิดแอป (ถ้าเคยล็อกอินไว้แล้ว ให้เข้าหน้า Profile เลย ไม่ต้องล็อกอินใหม่)
+window.onload = function() {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+        renderProfile(JSON.parse(savedUser));
+    } else {
+        toggleSection('login-section');
+    }
+}
+
 
 // ระบบสมัครสมาชิก
 async function register() {
