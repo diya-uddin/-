@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Prompt', sans-serif;
+}
+
+body {
+    background-color: #0f172a;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* --- Animated Background --- */
+.bg-animation {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.blob {
+    position: absolute;
+    filter: blur(80px);
+    border-radius: 50%;
+    animation: move 10s infinite alternate;
+}
+
+.blob-1 {
+    top: -10%; left: -10%;
+    width: 400px; height: 400px;
+    background: #f97316; /* สีส้มบาสเกตบอล */
+}
+
+.blob-2 {
+    bottom: -10%; right: -10%;
+    width: 350px; height: 350px;
+    background: #3b82f6; /* สีฟ้าสปอร์ต */
+    animation-delay: 2s;
+}
+
+@keyframes move {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(50px, 50px) scale(1.2); }
+}
+
+/* --- Glassmorphism UI --- */
+.glass-container {
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+}
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.glass-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    outline: none;
+    font-size: 16px;
+    transition: 0.3s ease;
+}
+
+.glass-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+.glass-input:focus { border-color: #f97316; background: rgba(255, 255, 255, 0.15); }
+.glass-input option { color: #000; } /* สำหรับ Select dropdown */
+
+.glass-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+}
+
+.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(249, 115, 22, 0.6); }
+
+.switch-text {
+    text-align: center;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 8px;
+}
+
+.switch-text span {
+    color: #f97316;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.spinner {
+    width: 40px; height: 40px;
+    border: 4px solid rgba(255,255,255,0.1);
+    border-top-color: #f97316;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
