@@ -46,6 +46,25 @@
             
             <button onclick="register()" class="glass-btn primary-btn">สมัครสมาชิก</button>
             <p class="switch-text">มีบัญชีแล้ว? <span onclick="toggleSection('login-section')">เข้าสู่ระบบ</span></p>
+
+                    <!-- หน้า Profile (Dashboard) จะแสดงเมื่อล็อกอินสำเร็จ -->
+        <div id="profile-section" class="glass-panel" style="display: none;">
+            <div class="profile-header">
+                <img id="user-avatar" src="https://via.placeholder.com/100" alt="Profile" class="avatar">
+                <h2 id="user-name">ชื่อผู้เล่น</h2>
+                <p id="user-details">ตำแหน่ง | เบอร์เสื้อ</p>
+                <span id="user-role-badge" class="role-badge">Player</span>
+            </div>
+            
+            <div class="menu-grid">
+                <button onclick="toggleSection('match-section')" class="glass-btn action-btn">🏀 จับคู่</button>
+                <button onclick="toggleSection('leaderboard-section')" class="glass-btn action-btn">🏆 ลำดับ</button>
+                <button onclick="toggleSection('stats-section')" class="glass-btn action-btn">📊 สถิติ</button>
+            </div>
+
+            <button onclick="logout()" class="glass-btn logout-btn">ออกจากระบบ</button>
+        </div>
+
         </div>
 
         <!-- หน้า Loading (ซ่อนไว้) -->
