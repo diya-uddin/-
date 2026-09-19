@@ -13,7 +13,7 @@ let currentMatchId = null;
 window.OneSignal = window.OneSignal || [];
 OneSignal.push(function() {
     OneSignal.init({
-        appId: "ใส่_APP_ID_จาก_ONESIGNAL_ที่นี่", // จะมาใส่ทีหลังตอนทำระบบแจ้งเตือนได้ครับ
+        appId: "fdd3c4f0-58c4-41e6-90b0-40bc81b36097", // จะมาใส่ทีหลังตอนทำระบบแจ้งเตือนได้ครับ
         safari_web_id: "",
         notifyButton: {
             enable: true,
