@@ -18,7 +18,7 @@
     <!-- คอนเทนเนอร์หลักแบบ Glassmorphism -->
     <div class="glass-container" id="app-container">
         
-        <!-- หน้า Login -->
+        <!-- 1. หน้า Login -->
         <div id="login-section" class="glass-panel">
             <h2>เข้าสู่ระบบ 🏀</h2>
             <input type="text" id="login-name" placeholder="ชื่อผู้ใช้งาน" class="glass-input">
@@ -27,7 +27,7 @@
             <p class="switch-text">ยังไม่มีบัญชี? <span onclick="toggleSection('register-section')">สมัครสมาชิก</span></p>
         </div>
 
-        <!-- หน้า Register (ซ่อนไว้เป็นค่าเริ่มต้น) -->
+        <!-- 2. หน้า Register -->
         <div id="register-section" class="glass-panel" style="display: none;">
             <h2>สมัครสมาชิก 📝</h2>
             <input type="text" id="reg-name" placeholder="ชื่อผู้ใช้งาน" class="glass-input">
@@ -41,12 +41,13 @@
                 <option value="PF">Power Forward (PF)</option>
                 <option value="C">Center (C)</option>
             </select>
-            <!-- อนาคตจะทำระบบอัปโหลดรูป ตอนนี้ใส่เป็น Text ให้ใส่ลิงก์รูปไปก่อน -->
             <input type="text" id="reg-pic" placeholder="ลิงก์รูปโปรไฟล์ (ถ้ามี)" class="glass-input">
             
             <button onclick="register()" class="glass-btn primary-btn">สมัครสมาชิก</button>
             <p class="switch-text">มีบัญชีแล้ว? <span onclick="toggleSection('login-section')">เข้าสู่ระบบ</span></p>
-          <!-- หน้า Profile (Dashboard) จะแสดงเมื่อล็อกอินสำเร็จ -->
+        </div> <!-- ✅ เพิ่มแท็กปิดของหน้านี้กลับมาแล้ว -->
+
+        <!-- 3. หน้า Profile (Dashboard) -->
         <div id="profile-section" class="glass-panel" style="display: none;">
             <div class="profile-header">
                 <img id="user-avatar" src="https://via.placeholder.com/100" alt="Profile" class="avatar">
@@ -64,7 +65,7 @@
             <button onclick="logout()" class="glass-btn logout-btn">ออกจากระบบ</button>
         </div>
 
-        <!-- หน้า Loading (ซ่อนไว้) -->
+        <!-- 4. หน้า Loading (ซ่อนไว้) -->
         <div id="loading-section" class="glass-panel" style="display: none; text-align: center;">
             <div class="spinner"></div>
             <p>กำลังประมวลผล...</p>
